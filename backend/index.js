@@ -1,12 +1,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose';
+import courseRouter from './router/courseRouter.js';
 
 const app = express();
 dotenv.config();
 
-const port = process.env.PORT || 3000
+app.use(express.json());
 
+const port = process.env.PORT || 3000
 const db_url = process.env.MONGO_URL;
 try {
     await mongoose.connect(db_url);
@@ -17,6 +19,8 @@ try {
         error: error.message
     })
 }
+
+app.use("/api/v1/course", courseRouter);
 
 
 app.listen(port, () => {
