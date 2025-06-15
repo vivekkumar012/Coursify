@@ -1,4 +1,4 @@
-import { userModel } from "../model/userModel";
+import { userModel } from "../model/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -47,7 +47,39 @@ export const signin = async (req, res) => {
                 message: "All fields are required for signup"
             })
         }
+
+        const user = await userModel.findOne({
+            email : email
+        })
+        if(!user) {
+            return res.status(403).json({
+                message: "User not exist with this email"
+            })
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch) {
+            return res.status(403).json({
+                message: "Password not matched"
+            })
+        }
+
+        const token = await jwt.sign({
+            id: user._id
+        }, process.env.JWT_USER_SECRET);
+
+        res.json(203).json({
+            message: "User signin Sucessfully",
+            token
+        })
     } catch (error) {
-        
+        res.status(403).json({
+            message: "Error in user Signin controller",
+            error: error.message
+        })
     }
+}
+
+export const logout = async (req, res) => {
+    const {} = req.user
 }
