@@ -85,3 +85,60 @@ export const updateCourse = async (req, res) => {
         })
     }
 }
+
+export const deleteCourse = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+        const course = await courseModel.findOneAndDelete({
+            _id: courseId
+        });
+
+        if(!course) {
+            return res.status(400).json({
+                message: "Course not found with this id"
+            })
+        }
+        res.status(200).json({
+            message: "Course Deleted successfully"
+        })
+    } catch (error) {
+        return res.status(400).json({
+            message: "Error in Course Deletion",
+            error: error.message
+        })
+    }
+}
+
+export const getCourses = async(req, res) => {
+    try {
+        const course = await courseModel.find({})
+        res.status(201).json({course});
+    } catch (error) {
+        res.status(500).json({
+            message: "Error in getAll Courses",
+            error: error.message
+        })
+    }
+}
+
+export const getCourseDetails = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const course = await courseModel.findById(courseId);
+        if(!course) {
+            return res.status(401).json({
+                message: "Course not found with this id"
+            })
+        }
+        res.status(200).json({
+            course
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            message: "Error in Getting single Course",
+            error: error.message
+        })
+    }
+}
