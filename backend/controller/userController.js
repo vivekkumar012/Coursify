@@ -1,9 +1,25 @@
 import { userModel } from "../model/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod'
 
 export const signup = async (req, res) => {
     const {firstname, lastname, email, password} = req.body;
+    // Server Side Validation using ZOD
+    const userSchema = z.object({
+        firstname: z.string().min(2, {message: "name must be 10 chars long"}),
+        lastname: z.string().min(2),
+        email: z.string().email(),
+        password: z.string().min(2)
+    })
+    const validateSchema = userSchema.safeParse(req.body);
+    if(!validateSchema.success) {
+        return res.status(402).json({
+            message: "Incorrect Format",
+            error: validateSchema.error
+        })
+    }
+
     try {
         if(!firstname || !lastname || !email || !password) {
             return res.status(400).json({
@@ -21,7 +37,7 @@ export const signup = async (req, res) => {
         }
         const hashPass = await bcrypt.hash(password, 10);
 
-        await userModel.create({
+        const newUser = await userModel.create({
             firstname: firstname,
             lastname: lastname,
             email: email,
@@ -29,7 +45,8 @@ export const signup = async (req, res) => {
         });
 
         res.status(200).json({
-            message: "User signup successfully"
+            message: "User signup successfully",
+            newUser
         })
     } catch (error) {
         res.status(403).json({
@@ -40,11 +57,11 @@ export const signup = async (req, res) => {
 }
 
 export const signin = async (req, res) => {
-    const {firstname, lastname, email, password} = req.body;
+    const { email, password} = req.body;
     try {
-        if(!firstname || !lastname || !email || !password) {
+        if(!email || !password) {
             return res.status(400).json({
-                message: "All fields are required for signup"
+                message: "All fields are required for signin"
             })
         }
 
@@ -70,7 +87,8 @@ export const signin = async (req, res) => {
 
         res.json(203).json({
             message: "User signin Sucessfully",
-            token
+            token,
+            user
         })
     } catch (error) {
         res.status(403).json({

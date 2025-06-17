@@ -17,6 +17,7 @@ app.use(fileUpload({
 
 const port = process.env.PORT || 3000
 const db_url = process.env.MONGO_URL;
+
 try {
     await mongoose.connect(db_url);
     console.log("DataBase is Connected");
