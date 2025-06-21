@@ -81,12 +81,14 @@ export const signin = async (req, res) => {
             })
         }
 
-        const token = await jwt.sign({
+        const token = jwt.sign({
             id: user._id
         }, process.env.JWT_USER_SECRET);
+        //Frontend me easily access ke liye
+        res.cookie("jwt", token);
 
-        res.json(203).json({
-            message: "User signin Sucessfully",
+        res.status(201).json({
+            message: "User signin Sucessfully", 
             token,
             user
         })
@@ -99,5 +101,15 @@ export const signin = async (req, res) => {
 }
 
 export const logout = async (req, res) => {
-    const {} = req.user
+    try {
+        res.clearCookie("jwt");
+        res.status(200).json({
+            message: "User Logout Successfully"
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: "Error in User Logout",
+            error: error.message
+        })
+    }
 }
