@@ -163,6 +163,15 @@ export const buyCourses = async (req, res) => {
                 message: "Course already purchased"
             })
         }
+        const newPurchase = await purchaseModel.create({
+            userId: userId,
+            courseId: courseId
+        })
+        res.status(200).json({
+            message: "Course purchased successfully",
+            newPurchase
+        })
+        
     } catch (error) {
         res.status(400).json({
             message: "Error while Purchase Course",
