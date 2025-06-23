@@ -2,6 +2,8 @@ import { userModel } from "../model/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod'
+import { purchaseModel } from "../model/purchaseModel.js";
+import { courseModel } from "../model/courseModel.js";
 
 export const signup = async (req, res) => {
     const {firstname, lastname, email, password} = req.body;
@@ -83,9 +85,15 @@ export const signin = async (req, res) => {
 
         const token = jwt.sign({
             id: user._id
-        }, process.env.JWT_USER_SECRET);
+        }, process.env.JWT_USER_SECRET, { expiresIn: "1d" });
         //Frontend me easily access ke liye
-        res.cookie("jwt", token);
+        const cookieOptions = {
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+            httpOnly: true, //  can't be accsed via js directly
+            secure: process.env.NODE_ENV === "production", // true for https only
+            sameSite: "Strict", // CSRF attacks se protect
+        };
+        res.cookie("jwt", token, cookieOptions);
 
         res.status(201).json({
             message: "User signin Sucessfully", 
@@ -109,6 +117,36 @@ export const logout = async (req, res) => {
     } catch (error) {
         res.status(400).json({
             message: "Error in User Logout",
+            error: error.message
+        })
+    }
+}
+
+export const purchases = async (req, res) => {
+    const { userId } = req.userId;
+    try {
+        const purchased = await purchaseModel.findById(userId);
+        if(!purchased) {
+            return res.status(401).json({
+                message: "You have not any purchased courses"
+            })
+        }
+        let purchasedCourse = [];
+        for(let i=0; i<purchased.length; i++) {
+            purchasedCourse.push(purchased.courseId);
+        }
+        const courseData = await courseModel.find({
+            _id: { $in: purchasedCourse },
+        })
+        res.status(200).json({
+            message: " All purchases courese are successfully found",
+            purchased,
+            courseData
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            message: "Error in user purchases",
             error: error.message
         })
     }
