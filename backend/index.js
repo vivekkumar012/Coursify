@@ -5,6 +5,7 @@ import courseRouter from './router/courseRouter.js';
 import userRouter from './router/userRouter.js';
 import { v2 as cloudinary } from 'cloudinary'
 import fileUpload from 'express-fileupload';
+import adminRouter from './router/adminRouter.js';
 
 const app = express();
 dotenv.config();
@@ -30,7 +31,7 @@ try {
 
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/admin", )
+app.use("/api/v1/admin", adminRouter);
 
 //Cloudinary configuration
 cloudinary.config({ 
