@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 
 function userMiddleware(req, res, next) {
     const authHeader = req.headers.authorization;
-    if(!token || !token.startWith("Bearer ")) {
+    if(!authHeader || !authHeader.startWith("Bearer ")) {
         return res.status(401).json({
             message: "No token provided"
         })

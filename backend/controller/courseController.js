@@ -3,6 +3,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import { purchaseModel } from "../model/purchaseModel.js";
 
 export const createCourse = async(req, res) => {
+    const adminId = req.adminId;
     try {
         const { title, description, price } = req.body;
         if(!title || !description || !price ) {
@@ -40,7 +41,8 @@ export const createCourse = async(req, res) => {
             image: {
                 public_id: cloud_response.public_id,
                 url: cloud_response.url
-            }
+            },
+            creatorId: adminId
         })
         res.status(200).json({
             message: "Course Created",
@@ -55,6 +57,7 @@ export const createCourse = async(req, res) => {
 }
 
 export const updateCourse = async (req, res) => {
+    const adminId = req.adminId;
     try {
         const { courseId } = req.params;
         const { title, description, price, image} = req.body;
@@ -63,8 +66,13 @@ export const updateCourse = async (req, res) => {
                 message: "All fields are required for update the course content"
             })
         }
+        const courseSearch = await courseModel.findById(courseId);
+        if (!courseSearch) {
+           return res.status(404).json({ errors: "Course not found" });
+        }
         const course = await courseModel.updateOne({
-            _id: courseId
+            _id: courseId,
+            creatorId: adminId
         },
         {
             title: title || course.title,
@@ -88,11 +96,13 @@ export const updateCourse = async (req, res) => {
 }
 
 export const deleteCourse = async (req, res) => {
+    const adminId = req.adminId;
     try {
         const { courseId } = req.params;
 
         const course = await courseModel.findOneAndDelete({
-            _id: courseId
+            _id: courseId,
+            creatorId: adminId
         });
 
         if(!course) {

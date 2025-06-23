@@ -102,13 +102,18 @@ export const signin = async(req, res) => {
 
 export const logout = async(req, res) => {
     try {
+        if(!req.cookies.jwt) {
+            return res.status(400).json({
+                message: "Login first"
+            })
+        }
         res.clearCookie("jwt");
         res.status(200).json({
             message: "admin Logout Successfully"
         })
     } catch (error) {
         res.status(400).json({
-            message: "Error in User Logout",
+            message: "Error in admin Logout",
             error: error.message
         })
     }

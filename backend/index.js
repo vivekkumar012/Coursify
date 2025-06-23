@@ -9,8 +9,11 @@ import adminRouter from './router/adminRouter.js';
 
 const app = express();
 dotenv.config();
+import cookieParser from 'cookie-parser';
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
