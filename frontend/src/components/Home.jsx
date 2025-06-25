@@ -1,11 +1,66 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../../public/logo.webp'
 import { FaFacebook } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
+import axios from 'axios'
+import Slider from "react-slick";
 
 function Home() {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get("http://localhost:4001/api/v1/course/courses", {
+          withCredentials: true
+        });
+        console.log(response.data.courses);
+        setCourses(response.data.courses);
+      } catch (error) {
+        console.log("Error in fetch courses in home page", error);
+      }
+    };
+    fetchCourses();
+  }, [])
+
+  //Setting code for slider
+  var settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    initialSlide: 0,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
+
   return (
     <div className='bg-gradient-to-r from-black to-blue-950 h-screen'>
       <div className='h-screen text-white container mx-auto'>
@@ -32,10 +87,23 @@ function Home() {
            </div>
          </section>
 
-         <section>Section2</section>
+         <section>
+            <Slider {...settings}>
+               {courses.map((course) => (
+                 <div key={course._id}>
+                   <div>
+                     <div>
+                       <img src={course.image} alt="" />
+                     </div>
+                   </div>
+                 </div>
+               ))}
+            </Slider>
+         </section>
 
+          <hr />
          {/* Footer Section */}
-         <footer>
+         <footer className='mt-8'>
            <div className='grid grid-cols-1 md:grid-cols-3'> 
               <div className='flex flex-col items-center md:items-start'>
                 <div className='flex items-center space-x-2'>
@@ -60,7 +128,14 @@ function Home() {
                   <li className='hover:text-white cursor-pointer duration-300'>GitHub- learn coding</li>
                 </ul>
               </div>
-              <div>right</div>
+              <div className='items-center flex flex-col'>
+                <h3 className='font-semibold mb-3 text-lg'>copyrights &#169; 2025</h3>
+                <ul className='space-y-2 text-gray-400 items-center'>
+                  <li className='hover:text-white cursor-pointer duration-300'>Terms and Conditions</li>
+                  <li className='hover:text-white cursor-pointer duration-300'>Privacy and Policy</li>
+                  <li className='hover:text-white cursor-pointer duration-300'>Refund and cancellation</li>
+                </ul>
+              </div>
            </div>
          </footer>
       </div>

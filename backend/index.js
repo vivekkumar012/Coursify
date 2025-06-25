@@ -6,6 +6,7 @@ import userRouter from './router/userRouter.js';
 import { v2 as cloudinary } from 'cloudinary'
 import fileUpload from 'express-fileupload';
 import adminRouter from './router/adminRouter.js';
+import cors from 'cors'
 
 const app = express();
 dotenv.config();
@@ -18,6 +19,12 @@ app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
 }));
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "PUT", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}))
 
 const port = process.env.PORT || 3000
 const db_url = process.env.MONGO_URL;
