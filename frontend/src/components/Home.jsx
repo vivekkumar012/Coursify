@@ -6,6 +6,8 @@ import { FaTwitter } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import axios from 'axios'
 import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 function Home() {
   const [courses, setCourses] = useState([]);
@@ -16,8 +18,8 @@ function Home() {
         const response = await axios.get("http://localhost:4001/api/v1/course/courses", {
           withCredentials: true
         });
-        console.log(response.data.courses);
-        setCourses(response.data.courses);
+        console.log(response.data.course);
+        setCourses(response.data.course);
       } catch (error) {
         console.log("Error in fetch courses in home page", error);
       }
@@ -31,14 +33,15 @@ function Home() {
     infinite: false,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToScroll: 1,
     initialSlide: 0,
+    autoplay: true,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 3,
+          slidesToScroll: 2,
           infinite: true,
           dots: true
         }
@@ -90,10 +93,14 @@ function Home() {
          <section>
             <Slider {...settings}>
                {courses.map((course) => (
-                 <div key={course._id}>
-                   <div>
-                     <div>
-                       <img src={course.image} alt="" />
+                 <div key={course._id} className='p-4'>
+                   <div className='relative flex-shrink-0 w-92 transition-transform duration-300 transform hover:scale-105'>
+                     <div className='bg-gray-900 rounded-lg overflow-hidden'>
+                       <img className='h-32 w-full object-contain' src={course.image.url} alt="" />
+                       <div className='p-6 text-center'>
+                         <h2 className='text-xl font-bold text-white'>{course.title}</h2>
+                         <button className='mt-4 bg-orange-500 text-white py-2 px-4 rounded-full hover:bg-blue-500'>Enroll now</button>
+                       </div>
                      </div>
                    </div>
                  </div>
