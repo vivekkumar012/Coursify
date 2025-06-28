@@ -8,10 +8,35 @@ import axios from 'axios'
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import toast from 'react-hot-toast';
 
 function Home() {
   const [courses, setCourses] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+    if(token) {
+      setIsLoggedIn(true)
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get("http://localhost:4001/api/v1/user/logout", {
+        withCredentials: true
+      })
+      toast.success(response.data.message); 
+      setIsLoggedIn(false);
+
+    } catch (error) {
+      console.log("Error in Logout", error)
+      toast.error(error.response.data.errors || "Error in Logout")
+    }
+  }
+ 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -74,8 +99,16 @@ function Home() {
               <h1 className='text-2xl font-bold text-orange-500'>Coursify</h1>
             </div>
             <div className='space-x-4'>
-              <Link to={"/signin"} className='bg-transparent text-white border border-white rounded py-2 px-4'>Login</Link>
-              <Link to={"/signup"} className='bg-transparent text-white border border-white rounded py-2 px-4'>Signup</Link>
+              
+              {isLoggedIn ? (
+                <button onClick={handleLogout} className='bg-transparent text-white border border-white rounded py-2 px-4' >
+                  Logout
+                </button>
+              ) : (<>
+                  <Link to={"/signin"} className='bg-transparent text-white border border-white rounded py-2 px-4'>Login</Link>
+                  <Link to={"/signup"} className='bg-transparent text-white border border-white rounded py-2 px-4'>Signup</Link>
+                  </>
+              )}
             </div>
          </header>
 

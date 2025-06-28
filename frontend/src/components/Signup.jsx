@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import logo from '../../public/logo.webp'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function Signup() {
 
@@ -11,6 +12,8 @@ function Signup() {
   const [password, setPassword] = useState("");
 
   const[errorMessage, setErrorMessage] = useState("")
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,11 +30,11 @@ function Signup() {
         }
       })
       console.log("SignUp Successfully: ", response.data);
-      alert(response.data.message);
+      toast.success(response.data.message);
+      navigate("/signin");
     } catch (error) {
       if(error.response) {
-        alert(error.response.data.errors);
-        setErrorMessage(error.response.data.errors || "Signup failed!!!");
+        setErrorMessage(error.response.data.errors || "Error in Signup!!!");
       }
     }
   }
