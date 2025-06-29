@@ -29,6 +29,7 @@ function Home() {
         withCredentials: true
       })
       toast.success(response.data.message); 
+      localStorage.removeItem("userToken");
       setIsLoggedIn(false);
 
     } catch (error) {
@@ -118,8 +119,8 @@ function Home() {
            <br />
            <p className='text-gray-500'>Sharpen your Skills with these Courses</p>
            <div className='space-x-4 mt-8'>
-             <button className='bg-green-500 text-white rounded py-3 px-6 font-semibold hover:bg-white duration-300 hover:text-black'>Explore Courses</button>
-             <button className='bg-white text-black rounded py-3 px-6 font-semibold hover:bg-green-500 duration-300 hover:text-white'>Courses Videos</button>
+             <Link to={"/courses"} className='bg-green-500 text-white rounded py-3 px-6 font-semibold hover:bg-white duration-300 hover:text-black'>Explore Courses</Link>
+             <Link className='bg-white text-black rounded py-3 px-6 font-semibold hover:bg-green-500 duration-300 hover:text-white'>Courses Videos</Link>
            </div>
          </section>
 
