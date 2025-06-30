@@ -20,7 +20,7 @@ function Courses() {
     console.log("Courses are", courses);
 
     useEffect(() => {
-        const token = localStorage.getItem("userToken");
+        const token = localStorage.getItem("user");
         if(token) {
             setIsLoggedIn(true);
         } else {
@@ -34,7 +34,7 @@ function Courses() {
                withCredentials: true
             });
             toast.success(response.data.message);
-            localStorage.removeItem("userToken");
+            localStorage.removeItem("user");
             setIsLoggedIn(false);
         } catch (error) {
             console.log("Error in Logout", error);
