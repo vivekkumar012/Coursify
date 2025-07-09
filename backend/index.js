@@ -1,5 +1,8 @@
-import express from 'express'
 import dotenv from 'dotenv'
+dotenv.config();
+
+import express from 'express'
+
 import mongoose from 'mongoose';
 import courseRouter from './router/courseRouter.js';
 import userRouter from './router/userRouter.js';
@@ -9,7 +12,7 @@ import adminRouter from './router/adminRouter.js';
 import cors from 'cors'
 
 const app = express();
-dotenv.config();
+
 import cookieParser from 'cookie-parser';
 
 app.use(express.json());

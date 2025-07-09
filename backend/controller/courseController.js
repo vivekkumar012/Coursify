@@ -154,7 +154,12 @@ export const getCourseDetails = async (req, res) => {
     }
 }
 
+import Stripe from 'stripe'
+
 export const buyCourses = async (req, res) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    console.log(process.env.STRIPE_SECRET_KEY);
+
     const { userId } = req.body;
     const { courseId } = req.params;
     try {
@@ -173,13 +178,23 @@ export const buyCourses = async (req, res) => {
                 message: "Course already purchased"
             })
         }
+
+        // Stripe Payment Integration starts
+        const amount = course.price;
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: "usd",
+            payment_method_types:["card"]
+        });
+
         const newPurchase = await purchaseModel.create({
             userId: userId,
             courseId: courseId
         })
         res.status(200).json({
             message: "Course purchased successfully",
-            newPurchase
+            course,
+            clientSecret: paymentIntent.client_secret,
         })
         
     } catch (error) {
