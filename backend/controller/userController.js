@@ -128,17 +128,13 @@ export const logout = async(req, res) => {
 }
 
 export const purchases = async (req, res) => {
-    const { userId } = req.userId;
+    const userId  = req.userId;
     try {
-        const purchased = await purchaseModel.findById(userId);
-        if(!purchased) {
-            return res.status(401).json({
-                message: "You have not any purchased courses"
-            })
-        }
+        const purchased = await purchaseModel.find({userId});
+       
         let purchasedCourse = [];
         for(let i=0; i<purchased.length; i++) {
-            purchasedCourse.push(purchased.courseId);
+            purchasedCourse.push(purchased[i].courseId);
         }
         const courseData = await courseModel.find({
             _id: { $in: purchasedCourse },
@@ -156,3 +152,35 @@ export const purchases = async (req, res) => {
         })
     }
 }
+
+// export const purchases = async (req, res) => {
+//     const userId = req.userId; // ✅ Fix 1
+
+//     try {
+//         const purchased = await purchaseModel.find({ userId }); // ✅ Fix 2
+
+//         if (!purchased || purchased.length === 0) {
+//             return res.status(401).json({
+//                 message: "You have not any purchased courses"
+//             });
+//         }
+
+//         const purchasedCourseIds = purchased.map(item => item.courseId); // ✅ Fix 3
+
+//         const courseData = await courseModel.find({
+//             _id: { $in: purchasedCourseIds },
+//         });
+
+//         res.status(200).json({
+//             message: "All purchased courses are successfully found",
+//             purchased,
+//             courseData
+//         });
+
+//     } catch (error) {
+//         res.status(400).json({
+//             message: "Error in user purchases",
+//             error: error.message
+//         });
+//     }
+// };

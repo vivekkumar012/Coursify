@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom'
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js"
+import { Link } from 'react-router-dom';
+
 
 function Buy() {
   const {courseId} = useParams()
@@ -30,7 +32,7 @@ function Buy() {
         setLoading(true);
         const response = await axios.post(`http://localhost:4001/api/v1/course/buy/${courseId}`,{}, {
           withCredentials: true,
-          Headers:{
+          headers:{
             Authorization: `Bearer ${token}`
           }
         }
@@ -53,7 +55,7 @@ function Buy() {
     fetchBuyCourseData();
   }, [courseId])
 
-  const handlePurchase = async () => {
+  const handlePurchase = async (event) => {
       event.preventDefault();
 
     if (!stripe || !elements) {
@@ -105,7 +107,7 @@ function Buy() {
       setCardError("your payment id: ", paymentIntent.id);
       const paymentInfo = {
         email: user?.user?.email,
-        userId: user.user._id,
+        userId: user?.user?._id,
         courseId: courseId,
         paymentId: paymentIntent.id,
         amount: paymentIntent.amount,

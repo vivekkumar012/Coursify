@@ -34,9 +34,7 @@ function Purchases() {
     }
   }, []);
 
-  // if (!token) {
-  //   navigate("/signin");
-  // }
+
   useEffect(() => {
   if (!token) {
     navigate("/signin");
@@ -44,6 +42,11 @@ function Purchases() {
     setIsLoggedIn(true);
   }
 }, [token, navigate]);
+
+   if (!token) {
+    navigate("/signin");
+  }
+  
 
 
   // Fetch purchases

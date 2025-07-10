@@ -25,7 +25,11 @@ function Login() {
       console.log("Sigin Successfull", response.data);
       toast.success(response.data.message);
       //localStorage.setItem("user", JSON.stringify(response.data.token));
-      localStorage.setItem("userToken", JSON.stringify({ token: response.data.token }));
+      localStorage.setItem("userToken", JSON.stringify({
+        token: response.data.token,
+        user: response.data.user
+      }));
+
 
       navigate("/")
     } catch (error) {
