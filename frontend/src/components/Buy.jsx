@@ -112,20 +112,18 @@ function Buy() {
         status: paymentIntent.status,
       };
       console.log("Payment info: ", paymentInfo);
-      // await axios
-      //   .post(`${BACKEND_URL}/order`, paymentInfo, {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //     withCredentials: true,
-      //   })
-      //   .then((response) => {
-      //     console.log(response.data);
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //     toast.error("Error in making payment");
-      //   });
+      await axios.post("http://localhost:4001/api/v1/order", paymentInfo, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      })
+      .then((response) => {
+        console.log(response.data)
+      }).catch((error) => {
+        console.log(error);
+        toast.error("error in making payment")
+      })
       toast.success("Payment Successful");
       navigate("/purchases");
     }
