@@ -2,10 +2,11 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 import express from 'express'
-
 import mongoose from 'mongoose';
+
 import courseRouter from './router/courseRouter.js';
 import userRouter from './router/userRouter.js';
+import orderRouter from './router/orderRouter.js';
 import { v2 as cloudinary } from 'cloudinary'
 import fileUpload from 'express-fileupload';
 import adminRouter from './router/adminRouter.js';
@@ -45,6 +46,7 @@ try {
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/order", orderRouter);
 
 //Cloudinary configuration
 cloudinary.config({ 
