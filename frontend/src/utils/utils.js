@@ -1,1 +1,1 @@
-export const BACKEND_URL = "https://coursify-1-kh8f.onrender.com"
+export const BACKEND_URL = "https://coursify-1-kh8f.onrender.com/api/v1"
