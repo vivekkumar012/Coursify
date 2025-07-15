@@ -13,6 +13,9 @@ import adminRouter from './router/adminRouter.js';
 import cors from 'cors'
 
 const app = express();
+const allowedOrigins = [
+  "https://coursify-theta.vercel.app"
+];
 
 import cookieParser from 'cookie-parser';
 
@@ -23,12 +26,24 @@ app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
 }));
+// app.use(cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//     methods: ["GET", "PUT", "POST", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+// }))
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-    methods: ["GET", "PUT", "POST", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-}))
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "PUT", "POST", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 const port = process.env.PORT || 3000
 const db_url = process.env.MONGO_URL;
