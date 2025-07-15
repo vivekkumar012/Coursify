@@ -3,6 +3,7 @@ import logo from '../../public/logo.webp'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { BACKEND_URL } from '../utils/utils'
 
 function AdminSignup() {
 
@@ -18,7 +19,7 @@ function AdminSignup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4001/api/v1/admin/signup", {
+      const response = await axios.post(`${BACKEND_URL}/admin/signup`, {
         firstname,
         lastname,
         email,
@@ -31,7 +32,7 @@ function AdminSignup() {
       })
       console.log("SignUp Successfully: ", response.data);
       toast.success(response.data.message);
-      navigate("/signin");
+      navigate("admin/signin");
     } catch (error) {
       if(error.response) {
         setErrorMessage(error.response.data.errors || "Error in Signup!!!");

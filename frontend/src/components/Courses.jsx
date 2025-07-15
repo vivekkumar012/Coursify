@@ -11,6 +11,7 @@ import { IoLogIn, IoLogOut } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import { HiMenu, HiX } from "react-icons/hi"; // Import menu and close icons
 import { Link } from 'react-router-dom';
+import { BACKEND_URL } from "../utils/utils";
 
 function Courses() {
     const [courses, setCourses] = useState("");
@@ -30,7 +31,7 @@ function Courses() {
 
     const handleLogout = async() => {
         try {
-            const response = await axios.get("http://localhost:4001/api/v1/user/logout", {
+            const response = await axios.get(`${BACKEND_URL}/user/logout`, {
                withCredentials: true
             });
             toast.success(response.data.message);
@@ -45,7 +46,7 @@ function Courses() {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get("http://localhost:4001/api/v1/course/courses", {
+                const response = await axios.get(`${BACKEND_URL}/course/courses`, {
                     withCredentials: true
                 })
                 console.log(response.data.course);

@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom'
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Link } from 'react-router-dom';
+import { BACKEND_URL } from "../utils/utils";
 
 
 function Buy() {
@@ -30,7 +31,7 @@ function Buy() {
       }
       try {
         setLoading(true);
-        const response = await axios.post(`http://localhost:4001/api/v1/course/buy/${courseId}`,{}, {
+        const response = await axios.post(`${BACKEND_URL}/course/buy/${courseId}`,{}, {
           withCredentials: true,
           headers:{
             Authorization: `Bearer ${token}`
@@ -114,7 +115,7 @@ function Buy() {
         status: paymentIntent.status,
       };
       console.log("Payment info: ", paymentInfo);
-      await axios.post("http://localhost:4001/api/v1/order", paymentInfo, {
+      await axios.post(`${BACKEND_URL}/order`, paymentInfo, {
         headers: {
           Authorization: `Bearer ${token}`
         },
