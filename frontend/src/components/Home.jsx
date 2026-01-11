@@ -187,7 +187,7 @@ function Home() {
            <p className='text-gray-400'>Sharpen your Skills with these Courses</p>
            <div className='space-x-4 mt-8'>
              <Link to={"/courses"} className='inline-block bg-green-500 text-white rounded py-3 px-6 font-semibold hover:bg-green-600 duration-300'>Explore Courses</Link>
-             <Link to={"/videos"} className='inline-block bg-white text-black rounded py-3 px-6 font-semibold hover:bg-gray-200 duration-300'>Course Videos</Link>
+             <Link to={"/courses"} className='inline-block bg-white text-black rounded py-3 px-6 font-semibold hover:bg-gray-200 duration-300'>Course Videos</Link>
            </div>
          </section>
 
