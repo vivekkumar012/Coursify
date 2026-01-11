@@ -9,19 +9,20 @@ import { FaDownload } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { IoLogIn, IoLogOut } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
-import { HiMenu, HiX } from "react-icons/hi"; // Import menu and close icons
+import { HiMenu, HiX } from "react-icons/hi";
 import { Link } from 'react-router-dom';
 import { BACKEND_URL } from "../utils/utils";
 
 function Courses() {
-    const [courses, setCourses] = useState("");
+    const [courses, setCourses] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     console.log("Courses are", courses);
 
     useEffect(() => {
-        const token = localStorage.getItem("user");
+        const token = localStorage.getItem("userToken"); // FIXED
         if(token) {
             setIsLoggedIn(true);
         } else {
@@ -30,30 +31,46 @@ function Courses() {
     }, [])
 
     const handleLogout = async() => {
+        setIsLoggingOut(true);
         try {
             const response = await axios.get(`${BACKEND_URL}/user/logout`, {
-               withCredentials: true
+               withCredentials: true,
+               timeout: 10000
             });
             toast.success(response.data.message);
-            localStorage.removeItem("user");
+            localStorage.removeItem("userToken"); // FIXED
             setIsLoggedIn(false);
         } catch (error) {
             console.log("Error in Logout", error);
-            toast.error(error.response.data.errors || "Error in Logout");
+            
+            // Still log out locally
+            localStorage.removeItem("userToken");
+            setIsLoggedIn(false);
+            
+            const errorMsg = error.response?.data?.errors 
+              || error.response?.data?.message 
+              || "Logged out locally";
+            toast.success(errorMsg);
+        } finally {
+            setIsLoggingOut(false);
         }
     }
-    //Fetch all courses from backend
+
+    // Fetch all courses from backend
     useEffect(() => {
         const fetchCourses = async () => {
             try {
                 const response = await axios.get(`${BACKEND_URL}/course/courses`, {
-                    withCredentials: true
+                    withCredentials: true,
+                    timeout: 15000
                 })
                 console.log(response.data.course);
-                setCourses(response.data.course);
+                setCourses(response.data.course || []); // FIXED: ensure it's always an array
                 setLoading(false);
             } catch (error) {
                 console.log("Error in fetch courses in home page", error);
+                setCourses([]); // Set empty array on error
+                setLoading(false);
             }
         };
         fetchCourses();
@@ -69,35 +86,45 @@ function Courses() {
         <nav>
             <ul>
                 <li className='mb-4'>
-                    <a href="/" className='flex items-center'><RiHome2Fill className="mr-2" />Home</a>
+                    <Link to="/" className='flex items-center hover:text-orange-500 transition-colors'>
+                      <RiHome2Fill className="mr-2" />Home
+                    </Link>
                 </li>
                 <li className='mb-4'>
-                    <a href="#" className='flex items-center'><FaDiscourse className="mr-2" />  Courses</a>
+                    <Link to="/courses" className='flex items-center hover:text-orange-500 transition-colors'>
+                      <FaDiscourse className="mr-2" />Courses
+                    </Link>
                 </li>
                 <li className='mb-4'>
-                    <a href="/purchases" className='flex items-center'><FaDownload className="mr-2" /> Purchases</a>
+                    <Link to="/purchases" className='flex items-center hover:text-orange-500 transition-colors'>
+                      <FaDownload className="mr-2" />Purchases
+                    </Link>
                 </li>
                 <li className='mb-4'>
-                    <a href="#" className='flex items-center'><IoMdSettings className="mr-2" /> Settings</a>
+                    <Link to="/settings" className='flex items-center hover:text-orange-500 transition-colors'>
+                      <IoMdSettings className="mr-2" />Settings
+                    </Link>
                 </li>
                 <li>
                     {isLoggedIn ? (
-                        <Link to={"/"}
-                        
-                        className="flex items-center"
-                        onClick={handleLogout}
+                        <button
+                          onClick={handleLogout}
+                          disabled={isLoggingOut}
+                          className="flex items-center hover:text-orange-500 transition-colors disabled:opacity-50 w-full text-left"
                         >
-                        <IoLogOut className="mr-2" /> Logout
-                        </Link>
+                          <IoLogOut className="mr-2" /> 
+                          {isLoggingOut ? 'Logging out...' : 'Logout'}
+                        </button>
                     ) : (
-                        <Link to={"/login"} className="flex items-center">
-                        <IoLogIn className="mr-2" /> Login
+                        <Link to="/signin" className="flex items-center hover:text-orange-500 transition-colors">
+                          <IoLogIn className="mr-2" />Login
                         </Link>
                     )}
                 </li>
             </ul>
         </nav>
       </aside>
+      
       {/* Main */}
       <main className='ml-0 md:ml-64 w-full bg-white p-10'>
         <header className="flex justify-between items-center mb-10">
@@ -117,11 +144,13 @@ function Courses() {
         </header>
 
         {/* Vertically Scrollable Courses Section */}
-         <div className="overflow-y-auto h-[75vh]">
+        <div className="overflow-y-auto h-[75vh]">
           {loading ? (
-            <p className="text-center text-gray-500">Loading...</p>
+            <div className="text-center py-8">
+              <div className='inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-500 border-r-transparent'></div>
+              <p className="text-gray-500 mt-4">Loading courses...</p>
+            </div>
           ) : courses.length === 0 ? (
-            // Check if courses array is empty
             <p className="text-center text-gray-500">
               No course posted yet by admin
             </p>
@@ -130,12 +159,12 @@ function Courses() {
               {courses.map((course) => (
                 <div
                   key={course._id}
-                  className="border border-gray-200 rounded-lg p-4 shadow-sm"
+                  className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <img
                     src={course.image.url}
                     alt={course.title}
-                    className="rounded mb-4"
+                    className="rounded mb-4 w-full h-48 object-cover"
                   />
                   <h2 className="font-bold text-lg mb-2">{course.title}</h2>
                   <p className="text-gray-600 mb-4">
@@ -146,15 +175,14 @@ function Courses() {
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-bold text-xl">
                       ₹{course.price}{" "}
-                      <span className="text-gray-500 line-through">5999</span>
+                      <span className="text-gray-500 line-through text-sm">₹5999</span>
                     </span>
                     <span className="text-green-600">20% off</span>
                   </div>
 
-                  {/* Buy page */}
                   <Link
-                    to={`/buy/${course._id}`} // Pass courseId in URL
-                    className="bg-orange-500 w-full text-white px-4 py-2 rounded-lg hover:bg-blue-900 duration-300"
+                    to={`/buy/${course._id}`}
+                    className="block text-center bg-orange-500 w-full text-white px-4 py-2 rounded-lg hover:bg-orange-600 duration-300"
                   >
                     Buy Now
                   </Link>

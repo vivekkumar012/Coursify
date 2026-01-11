@@ -164,7 +164,7 @@ import Stripe from 'stripe'
 
 export const buyCourses = async (req, res) => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    console.log(process.env.STRIPE_SECRET_KEY);
+    //console.log(process.env.STRIPE_SECRET_KEY);
 
     const { userId } = req.body;
     const { courseId } = req.params;
